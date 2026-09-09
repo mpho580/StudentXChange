@@ -1,0 +1,27 @@
+/* Custom StudentXChange Styles extending Bootstrap */
+.hover-up {
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+.hover-up:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.08) !important;
+}
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+.object-fit-cover {
+    object-fit: cover;
+}
+.category-card {
+    cursor: pointer;
+    border-radius: 12px;
+}
+.product-card {
+    border-radius: 12px;
+}
+.hero-banner {
+    border-radius: 16px;
+}
+.transition {
+    transition: all 0.2s ease-in-out;
+}
