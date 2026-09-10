@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 17, 2026 at 02:50 PM
+-- Generation Time: Sep 10, 2026 at 11:22 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -93,6 +93,13 @@ CREATE TABLE `products` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `user_id`, `category_id`, `title`, `description`, `price`, `item_condition`, `image_path`, `status`, `created_at`) VALUES
+(1, 1, 1, 'Textbook', 'Good', 200.00, 'Like New', '../assets/default_product.png', 'Available', '2026-09-09 09:25:03');
+
 -- --------------------------------------------------------
 
 --
@@ -134,6 +141,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `student_number` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `surname` varchar(100) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `phone` varchar(20) DEFAULT NULL,
@@ -145,8 +153,12 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `student_number`, `name`, `email`, `password`, `phone`, `profile_picture`, `created_at`) VALUES
-(1, '402412207', 'hloni mokata', '402412207@my.richfield.ac.za', '$2y$10$SsU/WAejE3ojCIGcoa2qNuvjBahyj7ccVegsr9aJS83ujtX1AHk8.', '0679051788', 'default.png', '2026-07-17 12:31:09');
+INSERT INTO `users` (`id`, `student_number`, `name`, `surname`, `email`, `password`, `phone`, `profile_picture`, `created_at`) VALUES
+(1, '402412207', 'hloni mokata', NULL, '402412207@my.richfield.ac.za', '$2y$10$SsU/WAejE3ojCIGcoa2qNuvjBahyj7ccVegsr9aJS83ujtX1AHk8.', '0679051788', 'default.png', '2026-07-17 12:31:09'),
+(2, '21908482', 'Mpho', NULL, 'mphokgomo468@gmail.com', '$2y$10$qUblo6wyEKakzQpTbYbeTOXtSaM/WiKGw3v9gGm.W1DAak1pUlt/K', '+27670261592', 'default.png', '2026-09-07 18:24:55'),
+(3, '402412209', 'DEE MAZIBUKO', NULL, '402412209@my.richfield.com', '$2y$10$vkdoN7v.4h7VpGj9e87VruQasGh7PLDqP1IL4Cxaw4JRxzUbNQGx.', '0673548895', 'default.png', '2026-09-09 09:37:37'),
+(4, '406223102', 'Mbali Sibuko', NULL, '406223102@my.richfield.ac.za', '$2y$10$KFA5eiANUyg5qXmcdplkGej.Lwl4GCfvY/Nj3eqMo4dB5r9Bypoxa', '0689051778', 'default.png', '2026-09-09 09:41:20'),
+(5, '402312396', 'Lerato', NULL, '402312396@my.richfield.ac.za', '$2y$10$arNsebundJQTC05twrz6tO3L4jsAFRPO5kbmo5Bgfn.CGL0N8axvm', '7555555545', 'default.png', '2026-09-09 09:49:21');
 
 --
 -- Indexes for dumped tables
@@ -235,7 +247,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `reviews`
@@ -253,7 +265,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
