@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $studentNumber = sanitizeInput($_POST['student_number']);
     $name = sanitizeInput($_POST['name']);
+    $surname = sanitizeInput($_POST['surname']);
     $email = sanitizeInput($_POST['email']);
     $phone = sanitizeInput($_POST['phone']);
     $password = $_POST['password'];
@@ -75,26 +76,32 @@ $csrf_token = generateCsrfToken();
         <form action="register.php" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             
+            <div class="mb-3">
+                <label for="student_number" class="form-label small fw-bold text-dark">Student Number *</label>
+                <input type="text" class="form-control" id="student_number" name="student_number" placeholder="" required>
+            </div>
+
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label for="student_number" class="form-label small fw-bold text-dark">Student Number *</label>
-                    <input type="text" class="form-control" id="student_number" name="student_number" placeholder="e.g. 21908472" required>
+                    <label for="name" class="form-label small fw-bold text-dark">Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder=" " required>
                 </div>
+
                 <div class="col-md-6 mb-3">
-                    <label for="name" class="form-label small fw-bold text-dark">Full Name *</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    <label for="name" class="form-label small fw-bold text-dark">Surname *</label>
+                    <input type="text" class="form-control" id="surname" name="surname" placeholder=" " required>
                 </div>
             </div>
             
             <div class="mb-3">
                 <label for="email" class="form-label small fw-bold text-dark">Institutional Email *</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="e.g. 21908472@varsity.edu" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="" required>
                 <div class="form-text text-muted" style="font-size: 0.75rem;">Requires institutional university domains.</div>
             </div>
             
             <div class="mb-3">
                 <label for="phone" class="form-label small fw-bold text-dark">WhatsApp/Phone Number</label>
-                <input type="text" class="form-control" id="phone" name="phone" placeholder="e.g. +27 82 123 4567">
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="">
             </div>
             
             <div class="row">
