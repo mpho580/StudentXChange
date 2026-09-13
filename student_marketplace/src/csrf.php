@@ -17,7 +17,7 @@ function generateCsrfToken() {
  * Verify Submitted CSRF Token
  */
 function verifyCsrfToken($token) {
-    if (empty($_SESSION['csrf_token']) || empty($token)) {
+    if (!is_string($token) || empty($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
         return false;
     }
     return hash_equals($_SESSION['csrf_token'], $token);
