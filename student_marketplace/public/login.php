@@ -8,28 +8,32 @@ if (isLoggedIn()) {
 }
 
 $error = '';
+$loginId = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate CSRF security token
-    if (!verifyCsrfToken($_POST['csrf_token'])) {
-        die("CSRF Security Validation Failed.");
-    }
-    
-    $emailOrStudentNum = sanitizeInput($_POST['login_id']);
-    $password = $_POST['password'];
-    
-    if (empty($emailOrStudentNum) || empty($password)) {
-        $error = "Please fill in all fields.";
+    $submittedToken = $_POST['csrf_token'] ?? '';
+
+    if (!is_string($submittedToken) || !verifyCsrfToken($submittedToken)) {
+        $error = 'Security validation failed. Refresh the page and try again.';
     } else {
-        if (login($emailOrStudentNum, $password)) {
-            setFlashMessage("Welcome back to StudentXChange!", "success");
+        $submittedLoginId = $_POST['login_id'] ?? '';
+        $submittedPassword = $_POST['password'] ?? '';
+        [$loginId, $password, $error] = validateLoginCredentials($submittedLoginId, $submittedPassword);
+
+        if ($error === '' && !login($loginId, $password)) {
+            // A generic message prevents account-enumeration attacks.
+            $error = 'The email/student number or password is incorrect.';
+        }
+
+        if ($error === '') {
+            unset($_SESSION['csrf_token']);
+            setFlashMessage('Welcome back to StudentXChange!', 'success');
             redirect('/student_marketplace/public/index.php');
-        } else {
-            $error = "Invalid institutional credentials or password.";
         }
     }
 }
 
-$csrf_token = generateCsrfToken();
+$csrfToken = generateCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,49 +46,43 @@ $csrf_token = generateCsrfToken();
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center min-vh-100">
+    <main class="container" style="max-width: 450px;">
+        <div class="text-center mb-4">
+            <a class="text-decoration-none d-inline-block" href="/student_marketplace/public/index.php">
+                <h1 class="text-primary fw-bold text-uppercase"><i class="bi bi-shop-window text-warning me-2"></i>StudentXChange</h1>
+            </a>
+            <p class="text-secondary small">Sign in to your campus account</p>
+        </div>
 
-<div class="container" style="max-width: 450px;">
-    <div class="text-center mb-4">
-        <a class="text-decoration-none d-inline-block" href="/student_marketplace/public/index.php">
-            <h1 class="text-primary fw-bold text-uppercase"><i class="bi bi-shop-window text-warning me-2"></i>StudentXChange</h1>
-        </a>
-        <p class="text-secondary small">Sign in to your verified campus account</p>
-    </div>
-    
-    <div class="card border-0 shadow-lg p-4 bg-white rounded-3">
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        
-        <form action="login.php" method="POST">
-            <!-- CSRF Token -->
-            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-            
-            <div class="mb-3">
-                <label for="login_id" class="form-label small fw-bold text-dark">Email or Student Number</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
-                    <input type="text" class="form-control" id="login_id" name="login_id" placeholder="e.g. 21908472 or study@varsity.edu" required>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="password" class="form-label small fw-bold text-dark">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
-                </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary w-full py-2 fw-semibold shadow-sm mt-3"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</button>
-        </form>
-    </div>
-    
-    <div class="text-center mt-4">
-        <p class="text-secondary small">Don't have a verified account? <a href="register.php" class="text-primary fw-semibold">Register as a Student</a></p>
-    </div>
-</div>
+        <section class="card border-0 shadow-lg p-4 bg-white rounded-3" aria-labelledby="login-heading">
+            <h2 id="login-heading" class="visually-hidden">Sign in</h2>
+            <?php if ($error !== ''): ?>
+                <div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle-fill me-2"></i><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <form action="login.php" method="post">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+
+                <div class="mb-3">
+                    <label for="login_id" class="form-label small fw-bold text-dark">Email or student number</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                        <input class="form-control" id="login_id" name="login_id" type="text" value="<?= htmlspecialchars($loginId, ENT_QUOTES, 'UTF-8') ?>" placeholder="e.g. 21908472 or study@varsity.edu" autocomplete="username" inputmode="email" maxlength="100" required>
+                    </div>
+                    <div class="form-text">Use a valid email address or your 7–20 digit student number.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label small fw-bold text-dark">Password</label>
+                    <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" minlength="6" maxlength="1024" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm mt-3"><i class="bi bi-box-arrow-in-right me-2"></i>Sign in</button>
+            </form>
+        </section>
+
+        <p class="text-center text-secondary small mt-4">Don't have an account? <a href="register.php" class="text-primary fw-semibold">Register as a student</a></p>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
