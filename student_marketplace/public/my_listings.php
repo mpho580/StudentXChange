@@ -10,7 +10,19 @@
 	include "header.php";
 ?>
 
-	<h2 class="mb-4">My Listings</h2>
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div><h1 class="h2 mb-1">My Listings</h1><p class="text-secondary mb-0">Items you have published for sale.</p></div>
+		<a class="btn btn-primary" href="/student_marketplace/listing/create.php">Sell an item</a>
+	</div>
+
+	<?php if ($listings === false || $listings->num_rows === 0): ?>
+		<div class="card border-0 shadow-sm text-center p-5">
+			<i class="bi bi-box-seam fs-1 text-primary mb-3"></i>
+			<h2 class="h4">No listings yet</h2>
+			<p class="text-secondary">Listings appear here when they are published from your account.</p>
+			<div><a class="btn btn-primary" href="/student_marketplace/listing/create.php">Create your first listing</a></div>
+		</div>
+	<?php else: ?>
 
 	<div class="row">
 
@@ -42,25 +54,25 @@
 
 					<a
 						class="btn btn-primary btn-sm"
-						href="listing/view.php?id=<?= $listing['id'] ?>">
+						href="/student_marketplace/listing/view.php?id=<?= (int) $listing['id'] ?>">
 						View
 					</a>
 
 					<a
 						class="btn btn-warning btn-sm"
-						href="listing/edit.php?id=<?= $listing['id'] ?>">
+						href="/student_marketplace/listing/edit.php?id=<?= (int) $listing['id'] ?>">
 						Edit
 					</a>
 
 					<a
 						class="btn btn-danger btn-sm"
-						href="listing/delete.php?id=<?= $listing['id'] ?>">
+						href="/student_marketplace/listing/delete.php?id=<?= (int) $listing['id'] ?>">
 						Delete
 					</a>
 
 					<a
 						class="btn btn-success btn-sm"
-						href="listing/sold.php?id=<?= $listing['id'] ?>">
+						href="/student_marketplace/listing/sold.php?id=<?= (int) $listing['id'] ?>">
 						Sold
 					</a>
 
@@ -73,5 +85,6 @@
 	<?php endwhile; ?>
 
 	</div>
+	<?php endif; ?>
 
 <?php include "footer.php"; ?>
