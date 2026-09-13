@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../src/auth.php';
 require_once __DIR__ . '/../src/helpers.php';
 require_once __DIR__ . '/../src/csrf.php';
+require_once __DIR__ . '/../src/messages.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,7 +50,7 @@ require_once __DIR__ . '/../src/csrf.php';
                         <a class="nav-link" href="/student_marketplace/public/my_listings.php">My Listings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/student_marketplace/message/inbox.php">Inbox</a>
+                        <a class="nav-link" href="/student_marketplace/message/inbox.php">Inbox<?php $unreadCount = getUnreadMessageCount((int) $_SESSION['user_id']); ?><?php if ($unreadCount > 0): ?> <span class="badge rounded-pill bg-warning text-dark ms-1" aria-label="<?= $unreadCount ?> unread messages"><?= $unreadCount > 99 ? '99+' : $unreadCount ?></span><?php endif; ?></a>
                     </li>
                     <li class="nav-item dropdown ms-lg-2">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
