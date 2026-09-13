@@ -3,6 +3,8 @@ require_once __DIR__ . '/../src/auth.php';
 require_once __DIR__ . '/../src/helpers.php';
 require_once __DIR__ . '/../src/messages.php';
 require_once __DIR__ . '/../src/listings.php';
+require_once __DIR__ . '/../src/users.php';
+require_once __DIR__ . '/../src/csrf.php';
 
 requireLogin();
 
@@ -12,17 +14,25 @@ $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
 $partner = getUser($partner_id);
 $product = getListing($product_id);
 
-if (!$partner || !$product) {
-    die("Conversation parameters are invalid.");
+if (!$partner || !$product || $partner_id === (int) $_SESSION['user_id'] || !in_array((int) $product['user_id'], [(int) $_SESSION['user_id'], $partner_id], true)) {
+    setFlashMessage('Conversation parameters are invalid.', 'danger');
+    redirect('/student_marketplace/public/index.php');
 }
 
 $messages = getConversation($_SESSION['user_id'], $partner_id, $product_id);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $text = sanitizeInput($_POST['message_text']);
-    if (!empty($text)) {
-        sendMessage($_SESSION['user_id'], $partner_id, $product_id, $text);
+    $token = $_POST['csrf_token'] ?? '';
+    $text = $_POST['message_text'] ?? '';
+    $text = is_string($text) ? trim($text) : '';
+    if (!is_string($token) || !verifyCsrfToken($token)) {
+        setFlashMessage('Security validation failed. Please try again.', 'danger');
+    } elseif ($text === '' || strlen($text) > 2000) {
+        setFlashMessage('Messages must be between 1 and 2,000 characters.', 'danger');
+    } elseif (sendMessage((int) $_SESSION['user_id'], $partner_id, $product_id, $text)) {
         redirect("thread.php?partner_id=$partner_id&product_id=$product_id");
+    } else {
+        setFlashMessage('Your message could not be sent. Please try again.', 'danger');
     }
 }
 
@@ -58,9 +68,9 @@ include __DIR__ . '/../public/header.php';
                     ?>
                         <div class="d-flex flex-column <?php echo $isMe ? 'align-items-end' : 'align-items-start'; ?>">
                             <div class="p-3 rounded-4 shadow-sm text-white max-w-75 <?php echo $isMe ? 'bg-primary' : 'bg-dark'; ?>" style="font-size: 0.9rem;">
-                                <?php echo htmlspecialchars($msg['message_text']); ?>
+                                <?php echo htmlspecialchars($msg['message'], ENT_QUOTES, 'UTF-8'); ?>
                             </div>
-                            <span class="text-muted small mt-1" style="font-size: 0.75rem;"><?php echo date('h:i A', strtotime($msg['created_at'])); ?></span>
+                            <span class="text-muted small mt-1" style="font-size: 0.75rem;"><?php echo date('h:i A', strtotime($msg['sent_at'])); ?></span>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -68,6 +78,7 @@ include __DIR__ . '/../public/header.php';
             
             <!-- Message Input Form -->
             <form action="thread.php?partner_id=<?php echo $partner_id; ?>&product_id=<?php echo $product_id; ?>" method="POST" class="mt-auto">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="input-group">
                     <input type="text" class="form-control" name="message_text" placeholder="Type your offer or hand-off question..." required>
                     <button type="submit" class="btn btn-primary px-4 fw-bold"><i class="bi bi-send-fill"></i> Send</button>
