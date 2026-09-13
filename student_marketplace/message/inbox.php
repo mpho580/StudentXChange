@@ -15,7 +15,7 @@ $messages = getInbox($_SESSION['user_id']);
     Inbox
 </h2>
 
-<?php if (empty($messages)): ?>
+<?php if (!$messages || $messages->num_rows === 0): ?>
 
 <div class="alert alert-info">
     You have no conversations yet.
@@ -42,7 +42,7 @@ $messages = getInbox($_SESSION['user_id']);
                 <small class="text-muted">
 
                     Product:
-                    <?= htmlspecialchars($chat['title']) ?>
+                    <?= htmlspecialchars($chat['product_title']) ?>
 
                 </small>
 
