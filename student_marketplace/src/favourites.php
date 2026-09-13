@@ -1,4 +1,5 @@
-<?php function addFavorite($userId, $productId)
+<?php
+function addFavorite($userId, $productId)
 {
     global $conn;
 
@@ -7,9 +8,13 @@
         VALUES (?, ?)
     ");
 
+    if ($stmt === false) {
+        return false;
+    }
     $stmt->bind_param("ii", $userId, $productId);
-
-    return $stmt->execute();
+    $saved = $stmt->execute();
+    $stmt->close();
+    return $saved;
 }
 
 function removeFavorite($userId, $productId)
@@ -22,9 +27,13 @@ function removeFavorite($userId, $productId)
         AND product_id = ?
     ");
 
+    if ($stmt === false) {
+        return false;
+    }
     $stmt->bind_param("ii", $userId, $productId);
-
-    return $stmt->execute();
+    $removed = $stmt->execute();
+    $stmt->close();
+    return $removed;
 }
 
 function getFavorites($userId)
@@ -39,10 +48,13 @@ function getFavorites($userId)
         WHERE f.user_id = ?
     ");
 
+    if ($stmt === false) {
+        return false;
+    }
     $stmt->bind_param("i", $userId);
-
-    $stmt->execute();
-
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return false;
+    }
     return $stmt->get_result();
 }
-?>
