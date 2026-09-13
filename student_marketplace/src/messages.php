@@ -40,12 +40,8 @@ function getInbox($userId) {
     $stmt->bind_param("iiii", $userId, $userId, $userId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
-    $conversations = [];
-    while ($row = $result->fetch_assoc()) {
-        $conversations[] = $row;
-    }
     $stmt->close();
-    return $conversations;
+    return $result;
 }
 
 /**
@@ -53,15 +49,9 @@ function getInbox($userId) {
  */
 function getConversation($userId, $partnerId, $productId) {
     global $conn;
-    $stmt = $conn->prepare("SELECT m.*, u.name as sender_name FROM messages m JOIN users u ON m.sender_id = u.id WHERE ((m.sender_id = ? AND m.receiver_id = ?) OR (m.sender_id = ? AND m.receiver_id = ?)) AND m.product_id = ? ORDER BY m.created_at ASC");
+    $stmt = $conn->prepare("SELECT m.*, u.name as sender_name FROM messages m JOIN users u ON m.sender_id = u.id WHERE ((m.sender_id = ? AND m.receiver_id = ?) OR (m.sender_id = ? AND m.receiver_id = ?)) AND m.product_id = ? ORDER BY m.sent_at ASC");
     $stmt->bind_param("iiiii", $userId, $partnerId, $partnerId, $userId, $productId);
     $stmt->execute();
-    
-    // Auto-Mark incoming messages as read
-    $updateStmt = $conn->prepare("UPDATE messages SET is_read = 1 WHERE receiver_id = ? AND sender_id = ? AND product_id = ?");
-    $updateStmt->bind_param("iii", $userId, $partnerId, $productId);
-    $updateStmt->execute();
-    $updateStmt->close();
     
     $result = $stmt->get_result();
     $messages = [];
