@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../src/auth.php';
 require_once __DIR__ . '/../src/helpers.php';
 require_once __DIR__ . '/../src/listings.php';
+require_once __DIR__ . '/../src/csrf.php';
 
 include __DIR__ . '/../public/header.php';
 
@@ -64,10 +65,13 @@ if (!$item) {
                             <a href="/student_marketplace/message/thread.php?partner_id=<?php echo $item['user_id']; ?>&product_id=<?php echo $item['id']; ?>" class="btn btn-primary btn-sm px-3 fw-bold rounded-pill shadow-sm">
                                 <i class="bi bi-chat-dots-fill me-1"></i> Message Seller
                             </a>
-							<a class="btn btn-outline-danger" href="../favorites/add.php?id=<?= $item['id'] ?>">
-								<i class="bi bi-heart"></i>
-								Save
-							</a>
+                            <form action="/student_marketplace/public/favorites.php" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
+                                <input type="hidden" name="return_to" value="<?= htmlspecialchars('/student_marketplace/listing/view.php?id=' . (int) $item['id'], ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" class="btn btn-outline-danger"><i class="bi bi-heart me-1"></i>Save</button>
+                            </form>
                         <?php elseif (!isLoggedIn()): ?>
                             <a href="../public/login.php" class="btn btn-outline-primary btn-sm rounded-pill">Log in to Message</a>
                         <?php else: ?>
