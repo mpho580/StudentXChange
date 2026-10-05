@@ -88,7 +88,77 @@ function login($emailOrStudentNum, $password) {
 
     return true;
 }
+/**
+ * Find a user using their email or student number.
+ */
+function findUserForPasswordReset($loginId)
+{
+    global $conn;
 
+    $stmt = $conn->prepare(
+        "SELECT id, email, student_number
+         FROM users
+         WHERE email = ? OR student_number = ?
+         LIMIT 1"
+    );
+
+    if (!$stmt) {
+        return false;
+    }
+
+    $stmt->bind_param("ss", $loginId, $loginId);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    if ($result->num_rows !== 1) {
+        $stmt->close();
+        return false;
+    }
+
+    $user = $result->fetch_assoc();
+
+    $stmt->close();
+
+    return $user;
+}
+
+
+/**
+ * Update a user's password.
+ */
+function updateUserPassword($userId, $newPassword)
+{
+    global $conn;
+
+    $hashedPassword = password_hash(
+        $newPassword,
+        PASSWORD_DEFAULT
+    );
+
+    $stmt = $conn->prepare(
+        "UPDATE users
+         SET password = ?
+         WHERE id = ?"
+    );
+
+    if (!$stmt) {
+        return false;
+    }
+
+    $stmt->bind_param(
+        "si",
+        $hashedPassword,
+        $userId
+    );
+
+    $success = $stmt->execute();
+
+    $stmt->close();
+
+    return $success;
+}
 /** Log out the current user and destroy their session state. */
 function logout() {
     $_SESSION = [];
