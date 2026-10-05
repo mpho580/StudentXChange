@@ -21,11 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $name    = sanitizeInput($_POST['name'] ?? '');
-    $surname = sanitizeInput($_POST['surname'] ?? '');   // fixed
+    $surname = sanitizeInput($_POST['surname'] ?? '');
     $phone   = sanitizeInput($_POST['phone'] ?? '');
 
     if ($name === '' || $surname === '') {
         $error = 'Your name and surname are required.';
+    } elseif ($phone !== '' && !preg_match('/^[0-9]+$/', $phone)) {
+        $error = 'Phone number can only contain numbers.';
     } else {
         $newFilename = null;
 
@@ -77,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->execute()) {
                 $_SESSION['name']    = $name;
-                $_SESSION['surname'] = $surname;   // fixed
+                $_SESSION['surname'] = $surname;
 
                 setFlashMessage('Your profile was updated successfully.', 'success');
                 $stmt->close();
@@ -151,7 +153,10 @@ include __DIR__ . '/header.php';
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-circle overflow-hidden flex-shrink-0 d-flex align-items-center justify-content-center bg-warning text-dark fw-bold border"
                                  style="width:96px; height:96px; font-size:2rem;">
-                                <?php if ($avatarExists): ?> alt="Current profile picture" class="w-100 h-100 object-fit-cover">
+                                <?php if ($avatarExists): ?>
+                                    <img src="<?= htmlspecialchars($avatarPath) ?>"
+                                         alt="Current profile picture"
+                                         class="w-100 h-100 object-fit-cover">
                                 <?php else: ?>
                                     <?= htmlspecialchars($initials) ?>
                                 <?php endif; ?>
