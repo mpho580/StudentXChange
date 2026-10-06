@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../src/auth.php';
 require_once __DIR__ . '/../src/helpers.php';
 require_once __DIR__ . '/../src/csrf.php';
+require_once __DIR__ . '/../src/admin.php';
 
 requireLogin();
 
@@ -21,11 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $name    = sanitizeInput($_POST['name'] ?? '');
-    $surname = sanitizeInput($_POST['surname'] ?? '');   // fixed
+    $surname = sanitizeInput($_POST['surname'] ?? '');
     $phone   = sanitizeInput($_POST['phone'] ?? '');
 
     if ($name === '' || $surname === '') {
         $error = 'Your name and surname are required.';
+    } elseif ($phone !== '' && !preg_match('/^[0-9]+$/', $phone)) {
+        $error = 'Phone number can only contain numbers.';
     } else {
         $newFilename = null;
 
@@ -77,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->execute()) {
                 $_SESSION['name']    = $name;
-                $_SESSION['surname'] = $surname;   // fixed
+                $_SESSION['surname'] = $surname;
 
                 setFlashMessage('Your profile was updated successfully.', 'success');
                 $stmt->close();
@@ -132,6 +135,14 @@ include __DIR__ . '/header.php';
                     <div>
                         <h2 class="h3 mb-1"><?= htmlspecialchars(trim($user['name'] . ' ' . $user['surname'])) ?></h2>
                         <p class="mb-0 text-white-50">Student Marketplace Profile</p>
+
+                        <?php if (isAdmin()): ?>
+                            <a href="/student_marketplace/public/admin.php"
+                            class="btn btn-warning btn-sm fw-semibold mt-2">
+                                <i class="bi bi-shield-lock-fill me-1"></i>
+                                Go to Admin Portal
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -151,7 +162,10 @@ include __DIR__ . '/header.php';
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-circle overflow-hidden flex-shrink-0 d-flex align-items-center justify-content-center bg-warning text-dark fw-bold border"
                                  style="width:96px; height:96px; font-size:2rem;">
-                                <?php if ($avatarExists): ?> alt="Current profile picture" class="w-100 h-100 object-fit-cover">
+                                <?php if ($avatarExists): ?>
+                                    <img src="<?= htmlspecialchars($avatarPath) ?>"
+                                         alt="Current profile picture"
+                                         class="w-100 h-100 object-fit-cover">
                                 <?php else: ?>
                                     <?= htmlspecialchars($initials) ?>
                                 <?php endif; ?>
