@@ -35,34 +35,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //Student number validation
     if (empty($old['student_number'])) {
         $errors['student_number'] = 'Student number is required.';
-    } elseif (!preg_match('/^[0-9]+$/', $old['student_number'])) {
-        $errors['student_number'] = 'Student number can only contain numbers.';
+    } elseif (!preg_match('/^402[1-6][0-9]{5}$/', $old['student_number'])) {
+        $errors['student_number'] = 'Invalid Student number.';
     }
 
     // Name validation
     if (empty($old['name'])) {
         $errors['name'] = 'Name is required.';
-    } elseif (!preg_match("/^[a-zA-Z\s'-]+$/", $old['name'])) {
+    } elseif (!preg_match("/^[a-zA-Z\s'-]{2,}+$/", $old['name'])) {
         $errors['name'] = 'Name can only contain letters (no numbers).';
     }
 
     // Surname validation
     if (empty($old['surname'])) {
         $errors['surname'] = 'Surname is required.';
-    } elseif (!preg_match("/^[a-zA-Z\s'-]+$/", $old['surname'])) {
+    } elseif (!preg_match("/^[a-zA-Z\s'-]{2,}$/", $old['surname'])) {
         $errors['surname'] = 'Surname can only contain letters (no numbers).';
     }
 
-    //Email validation
+    // Email validation
     if (empty($old['email'])) {
         $errors['email'] = 'Email is required.';
     } elseif (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Please enter a valid email address.';
     } elseif (!isStudentEmail($old['email'])) {
         $errors['email'] = 'Only institutional student emails are allowed (e.g. @my.richfield.ac.za).';
+    } else {
+        // Extract the part before the @
+        $localPart = strstr($old['email'], '@', true);
+
+        // Local part must be a valid 9-digit student number (4021–4026)
+        if (!preg_match('/^402[1-6][0-9]{5}$/', $localPart)) {
+            $errors['email'] = 'Invalid institutional email.';
+        }
     }
 
-    //Student number and student email check
+    // Student number and student email consistency check
     if (empty($errors['student_number']) && empty($errors['email'])) {
         if (!studentNumberMatchesEmail($old['student_number'], $old['email'])) {
             $errors['student_number'] = 'Student number must match the number in your institutional email.';
@@ -70,11 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Phone numbers validation
+    // Phone number validation
     if (empty($old['phone'])) {
         $errors['phone'] = 'Cellphone number is required.';
-    }else if (!empty($old['phone']) && !preg_match('/^[0-9]+$/', $old['phone'])) {
-        $errors['phone'] = 'Phone number can only contain numbers.';
+    } elseif (!preg_match('/^0[6-8][0-9]{8}$/', $old['phone'])) {
+        $errors['phone'] = 'Phone number must be 10 digits';
     }
 
     //Password validation

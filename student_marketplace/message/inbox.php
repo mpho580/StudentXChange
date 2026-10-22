@@ -52,11 +52,14 @@ $messages = getInbox($_SESSION['user_id']);
 
                 <small class="text-muted">
 
-                    <?= date(
-                        "d M Y H:i",
-                        strtotime($chat['last_message'])
-                    ) ?>
-
+                    <?php
+                    $time = $chat['last_message_time'] ?? null;
+                    if ($time && $time !== '0000-00-00 00:00:00') {
+                        echo date('d M Y H:i', strtotime($time));
+                    } else {
+                        echo '—';
+                    }
+                    ?>
                 </small>
 
                 <br>
