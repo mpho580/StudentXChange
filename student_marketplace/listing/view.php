@@ -23,6 +23,10 @@ if (!$item) {
         <div class="col-md-5">
             <div class="position-relative">
                 <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 px-3 py-2 fw-bold fs-6 shadow-sm"><?php echo htmlspecialchars($item['item_condition']); ?></span>
+                <?php $isSold = ($item['status'] ?? 'Available') === 'Sold'; ?>
+                <span class="badge <?= $isSold ? 'bg-danger' : 'bg-success' ?> position-absolute top-0 start-0 m-3 px-3 py-2 fw-bold fs-6 shadow-sm">
+                    <i class="bi <?= $isSold ? 'bi-x-circle-fill' : 'bi-check-circle-fill' ?> me-1" aria-hidden="true"></i><?= $isSold ? 'Sold' : 'Available' ?>
+                </span>
                 <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="img-fluid rounded shadow-sm w-100 object-fit-cover" style="max-height: 400px;" alt="Product Card" onerror="this.src='../assets/default_product.png'">
             </div>
         </div>
@@ -31,6 +35,9 @@ if (!$item) {
         <div class="col-md-7 d-flex flex-column">
             <div class="mb-3">
                 <span class="badge bg-primary text-white mb-2"><?php echo htmlspecialchars($item['category_name']); ?></span>
+                <span class="badge <?= $isSold ? 'bg-danger' : 'bg-success' ?> mb-2">
+                    <i class="bi <?= $isSold ? 'bi-x-circle-fill' : 'bi-check-circle-fill' ?> me-1" aria-hidden="true"></i><?= $isSold ? 'Sold' : 'Available' ?>
+                </span>
                 <h2 class="fw-bold text-dark"><?php echo htmlspecialchars($item['title']); ?></h2>
                 <div class="text-muted small">Listed on <?php echo date('F d, Y @ h:i A', strtotime($item['created_at'])); ?></div>
             </div>
@@ -61,7 +68,9 @@ if (!$item) {
                     </div>
                     <div>
                         <!-- Chat buttons -->
-                        <?php if (isLoggedIn() && $_SESSION['user_id'] != $item['user_id']): ?>
+                        <?php if ($isSold): ?>
+                            <span class="badge bg-danger p-2 rounded-pill small">This item has been sold</span>
+                        <?php elseif (isLoggedIn() && $_SESSION['user_id'] != $item['user_id']): ?>
                             <a href="/student_marketplace/message/thread.php?partner_id=<?php echo $item['user_id']; ?>&product_id=<?php echo $item['id']; ?>" class="btn btn-primary btn-sm px-3 fw-bold rounded-pill shadow-sm">
                                 <i class="bi bi-chat-dots-fill me-1"></i> Message Seller
                             </a>
