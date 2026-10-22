@@ -2,6 +2,7 @@
 
 	require_once "../src/auth.php";
 	require_once "../src/listings.php";
+	require_once "../src/csrf.php";
 
 	requireLogin();
 
@@ -46,7 +47,7 @@
 
 					<p><?= htmlspecialchars($listing['category_name']) ?></p>
 
-					<span class="badge bg-success">
+					<span class="badge <?= $listing['status'] === 'Sold' ? 'bg-danger' : 'bg-success' ?>">
 						<?= htmlspecialchars($listing['status']) ?>
 					</span>
 
@@ -70,11 +71,14 @@
 						Delete
 					</a>
 
-					<a
-						class="btn btn-success btn-sm"
-						href="/student_marketplace/listing/sold.php?id=<?= (int) $listing['id'] ?>">
-						Sold
-					</a>
+					<form action="/student_marketplace/listing/sold.php" method="post" class="d-inline">
+						<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+						<input type="hidden" name="id" value="<?= (int) $listing['id'] ?>">
+						<input type="hidden" name="status" value="<?= $listing['status'] === 'Sold' ? 'Available' : 'Sold' ?>">
+						<button type="submit" class="btn <?= $listing['status'] === 'Sold' ? 'btn-outline-success' : 'btn-success' ?> btn-sm">
+							<?= $listing['status'] === 'Sold' ? 'Mark Available' : 'Mark as Sold' ?>
+						</button>
+					</form>
 
 				</div>
 
