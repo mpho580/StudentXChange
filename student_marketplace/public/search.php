@@ -90,7 +90,11 @@ $results = getListings($query, $category_id, $min_price, $max_price, $condition)
                 <?php foreach ($results as $item): ?>
                     <div class="col">
                         <div class="card h-100 border-0 shadow-sm hover-up transition">
-                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 px-2 py-1 fw-bold"><?php echo htmlspecialchars($item['item_condition']); ?></span>
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-3 px-2 py-1 fw-bold"><?php echo htmlspecialchars($item['item_condition']); ?></span>
+                            <?php $isSold = ($item['status'] ?? 'Available') === 'Sold'; ?>
+                            <span class="badge <?= $isSold ? 'bg-danger' : 'bg-success' ?> position-absolute top-0 end-0 m-3 px-2 py-1 fw-bold">
+                                <i class="bi <?= $isSold ? 'bi-x-circle-fill' : 'bi-check-circle-fill' ?> me-1" aria-hidden="true"></i><?= $isSold ? 'Sold' : 'Available' ?>
+                            </span>
                             <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="card-img-top object-fit-cover" style="height: 180px;" alt="Product" onerror="this.src='../assets/default_product.png'">
                             <div class="card-body d-flex flex-column">
                                 <span class="text-primary small fw-semibold"><?php echo htmlspecialchars($item['category_name']); ?></span>
