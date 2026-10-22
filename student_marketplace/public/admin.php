@@ -261,9 +261,24 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <a href="/student_marketplace/public/index.php">
                 <i class="bi bi-arrow-left me-2"></i> Back to Site
             </a>
-            <a href="/student_marketplace/public/logout.php">
-                <i class="bi bi-box-arrow-right me-2"></i> Logout
-            </a>
+            <form method="POST" action="/student_marketplace/public/logout.php" style="margin: 0;">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
+                <button type="submit" style="
+                    display: block;
+                    width: 100%;
+                    text-align: left;
+                    background: none;
+                    border: none;
+                    padding: 0.8rem 1.5rem;
+                    color: rgba(255,255,255,0.85);
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white';"
+                onmouseout="this.style.background='none'; this.style.color='rgba(255,255,255,0.85)';">
+                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                </button>
+            </form>
         </nav>
     </aside>
 

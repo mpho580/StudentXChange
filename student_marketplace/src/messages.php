@@ -69,23 +69,42 @@ require_once __DIR__ . '/db.php';
      */
     function getConversation($userId, $partnerId, $productId) {
         global $conn;
-        $stmt = $conn->prepare("SELECT m.*, u.name as sender_name FROM messages m JOIN users u ON m.sender_id = u.id WHERE ((m.sender_id = ? AND m.receiver_id = ?) OR (m.sender_id = ? AND m.receiver_id = ?)) AND m.product_id = ? ORDER BY m.sent_at ASC");
+
+        $stmt = $conn->prepare(
+            "SELECT m.*, u.name as sender_name 
+            FROM messages m 
+            JOIN users u ON m.sender_id = u.id 
+            WHERE ((m.sender_id = ? AND m.receiver_id = ?) 
+                OR (m.sender_id = ? AND m.receiver_id = ?)) 
+            AND m.product_id = ? 
+            ORDER BY m.sent_at ASC"
+        );
         $stmt->bind_param("iiiii", $userId, $partnerId, $partnerId, $userId, $productId);
         $stmt->execute();
 
-        $markRead = $conn->prepare('UPDATE messages SET is_read = 1 WHERE receiver_id = ? AND sender_id = ? AND product_id = ? AND is_read = 0');
+        // 1. Get the result FIRST so the connection is free
+        $result = $stmt->get_result();
+
+        // 2. Now it is safe to run the UPDATE
+        $markRead = $conn->prepare(
+            'UPDATE messages SET is_read = 1 
+            WHERE receiver_id = ? AND sender_id = ? AND product_id = ? AND is_read = 0'
+        );
         if ($markRead !== false) {
             $markRead->bind_param('iii', $userId, $partnerId, $productId);
             $markRead->execute();
             $markRead->close();
         }
-        
-        $result = $stmt->get_result();
+
+        // 3. Fetch the messages
         $messages = [];
         while ($row = $result->fetch_assoc()) {
             $messages[] = $row;
         }
+
+        $result->free();   // good practice
         $stmt->close();
+
         return $messages;
     }
 
