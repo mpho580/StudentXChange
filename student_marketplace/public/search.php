@@ -95,7 +95,7 @@ $results = getListings($query, $category_id, $min_price, $max_price, $condition)
                             <span class="badge <?= $isSold ? 'bg-danger' : 'bg-success' ?> position-absolute top-0 end-0 m-3 px-2 py-1 fw-bold">
                                 <i class="bi <?= $isSold ? 'bi-x-circle-fill' : 'bi-check-circle-fill' ?> me-1" aria-hidden="true"></i><?= $isSold ? 'Sold' : 'Available' ?>
                             </span>
-                            <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="card-img-top object-fit-cover" style="height: 180px;" alt="Product" onerror="this.src='../assets/default_product.png'">
+                            <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="card-img-top object-fit-cover" style="height: 180px;" alt="Product" onerror="this.src='/student_marketplace/OIP.webp'">
                             <div class="card-body d-flex flex-column">
                                 <span class="text-primary small fw-semibold"><?php echo htmlspecialchars($item['category_name']); ?></span>
                                 <h5 class="card-title text-dark fw-bold text-truncate mt-1 mb-1"><?php echo htmlspecialchars($item['title']); ?></h5>

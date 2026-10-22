@@ -80,7 +80,7 @@ include __DIR__ . '/../public/header.php';
             <form action="thread.php?partner_id=<?php echo $partner_id; ?>&product_id=<?php echo $product_id; ?>" method="POST" class="mt-auto">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="message_text" placeholder="Type your offer or hand-off question..." required>
+                    <input type="text" class="form-control" name="message_text" placeholder="" required>
                     <button type="submit" class="btn btn-primary px-4 fw-bold"><i class="bi bi-send-fill"></i> Send</button>
                 </div>
             </form>

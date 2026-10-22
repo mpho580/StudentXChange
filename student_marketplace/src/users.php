@@ -1,4 +1,3 @@
-```php
 <?php
 require_once __DIR__ . '/db.php';
 
@@ -109,4 +108,3 @@ function updateUser($id, $name, $surname, $phone, $profile_picture = null) {
     return $result;
 }
 ?>
-```

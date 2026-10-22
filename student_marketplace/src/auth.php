@@ -181,3 +181,4 @@ function requireLogin() {
         redirect('/student_marketplace/public/login.php');
     }
 }
+?>
