@@ -127,20 +127,24 @@ function deleteListing($listingId, $userId)
     return $stmt->execute();
 }
 
-function markListingSold($listingId, $userId)
+function setListingStatus($listingId, $userId, $status)
 {
     global $conn;
 
+    if (!in_array($status, ['Available', 'Sold'], true)) {
+        return false;
+    }
+
     $stmt = $conn->prepare("
         UPDATE products
-        SET status='Sold'
+        SET status=?
         WHERE id=?
         AND user_id=?
     ");
-
-    $stmt->bind_param("ii", $listingId, $userId);
-
-    return $stmt->execute();
+    $stmt->bind_param("sii", $status, $listingId, $userId);
+    $success = $stmt->execute();
+    $stmt->close();
+    return $success;
 }
 
 function updateListing(
