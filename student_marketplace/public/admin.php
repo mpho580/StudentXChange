@@ -161,7 +161,20 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             gap: 1.25rem;
             margin-bottom: 2rem;
         }
-
+             <div class="d-flex flex-wrap gap-2 mb-4">
+         <a href="reports.php?type=full" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Download Full Report (PDF)
+        </a>
+        <a href="reports.php?type=summary" class="btn btn-outline-primary">
+        <i class="bi bi-bar-chart-fill me-2"></i>Summary (PDF)
+         </a>
+         <a href="reports.php?type=users" class="btn btn-outline-primary">
+        <i class="bi bi-people-fill me-2"></i>Users (PDF)
+        </a>
+        <a href="reports.php?type=products" class="btn btn-outline-primary">
+        <i class="bi bi-box-seam-fill me-2"></i>Products (PDF)
+         </a>
+        </div>
         .stat-card {
             background: white;
             border-radius: 12px;
@@ -342,6 +355,9 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <h4 class="fw-bold text-dark mb-3">
                 <i class="bi bi-people-fill text-primary me-2"></i>All Users (<?php echo count($users); ?>)
             </h4>
+             <a href="reports.php?type=users" class="btn btn-danger btn-sm mb-3">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Export Users to PDF
+            </a>
             <div class="table-responsive">
                 <table class="admin-table">
                     <thead>
@@ -400,6 +416,9 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <h4 class="fw-bold text-dark mb-3">
                 <i class="bi bi-box-seam-fill text-primary me-2"></i>All Products (<?php echo count($products); ?>)
             </h4>
+             <a href="reports.php?type=products" class="btn btn-danger btn-sm mb-3">
+             <i class="bi bi-file-earmark-pdf-fill me-2"></i>Export Products to PDF
+            </a>
             <div class="table-responsive">
                 <table class="admin-table">
                     <thead>
