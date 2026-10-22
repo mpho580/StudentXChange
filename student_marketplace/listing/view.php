@@ -27,7 +27,7 @@ if (!$item) {
                 <span class="badge <?= $isSold ? 'bg-danger' : 'bg-success' ?> position-absolute top-0 start-0 m-3 px-3 py-2 fw-bold fs-6 shadow-sm">
                     <i class="bi <?= $isSold ? 'bi-x-circle-fill' : 'bi-check-circle-fill' ?> me-1" aria-hidden="true"></i><?= $isSold ? 'Sold' : 'Available' ?>
                 </span>
-                <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="img-fluid rounded shadow-sm w-100 object-fit-cover" style="max-height: 400px;" alt="Product Card" onerror="this.src='../assets/default_product.png'">
+                <img src="<?php echo htmlspecialchars($item['image_path']); ?>" class="img-fluid rounded shadow-sm w-100 object-fit-cover" style="max-height: 400px;" alt="Product Card" onerror="this.src='/student_marketplace/OIP.webp'">
             </div>
         </div>
         
