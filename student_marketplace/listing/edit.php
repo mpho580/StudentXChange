@@ -13,7 +13,15 @@ if (!$item || (int)$item['user_id'] !== (int)$_SESSION['user_id']) {
     die("Access denied.");
 }
 
+// Load categories for the dropdown
+$categories = getAllCategories();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Optional: CSRF check
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        die("CSRF validation failed.");
+    }
+
     updateListing(
         $id,
         (int)$_SESSION['user_id'],
@@ -163,10 +171,18 @@ $csrf = generateCsrfToken();
                         <input type="number" step="0.01" min="0" name="price" class="form-control"
                                value="<?= htmlspecialchars($item['price']) ?>" required>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Category ID</label>
-                        <input type="number" name="category_id" class="form-control"
-                               value="<?= htmlspecialchars($item['category_id']) ?>" required>
+                        <label class="form-label">Category</label>
+                        <select name="category_id" class="form-select" required>
+                            <option value="">-- Select Category --</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?= (int)$cat['id'] ?>"
+                                    <?= (int)$item['category_id'] === (int)$cat['id'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($cat['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
