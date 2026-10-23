@@ -261,6 +261,8 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <a href="/student_marketplace/public/index.php">
                 <i class="bi bi-arrow-left me-2"></i> Back to Site
             </a>
+
+            <!-- Logout form (POST + CSRF) -->
             <form method="POST" action="/student_marketplace/public/logout.php" style="margin: 0;">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf); ?>">
                 <button type="submit" style="
@@ -275,7 +277,7 @@ $tab      = $_GET['tab'] ?? 'dashboard';
                     cursor: pointer;
                     transition: all 0.2s ease;
                 " onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white';"
-                onmouseout="this.style.background='none'; this.style.color='rgba(255,255,255,0.85)';">
+                   onmouseout="this.style.background='none'; this.style.color='rgba(255,255,255,0.85)';">
                     <i class="bi bi-box-arrow-right me-2"></i> Logout
                 </button>
             </form>
@@ -291,6 +293,23 @@ $tab      = $_GET['tab'] ?? 'dashboard';
 
         <!-- DASHBOARD TAB -->
         <div class="tab-content <?php echo $tab === 'dashboard' ? 'active' : ''; ?>">
+
+            <!-- Report download buttons -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <a href="reports.php?type=full" class="btn btn-danger">
+                    <i class="bi bi-file-earmark-pdf-fill me-2"></i>Download Full Report (PDF)
+                </a>
+                <a href="reports.php?type=summary" class="btn btn-outline-primary">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Summary (PDF)
+                </a>
+                <a href="reports.php?type=users" class="btn btn-outline-primary">
+                    <i class="bi bi-people-fill me-2"></i>Users (PDF)
+                </a>
+                <a href="reports.php?type=products" class="btn btn-outline-primary">
+                    <i class="bi bi-box-seam-fill me-2"></i>Products (PDF)
+                </a>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card hover-up">
                     <h3><?php echo $stats['total_users']; ?></h3>
@@ -342,6 +361,11 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <h4 class="fw-bold text-dark mb-3">
                 <i class="bi bi-people-fill text-primary me-2"></i>All Users (<?php echo count($users); ?>)
             </h4>
+
+            <a href="reports.php?type=users" class="btn btn-danger btn-sm mb-3">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Export Users to PDF
+            </a>
+
             <div class="table-responsive">
                 <table class="admin-table">
                     <thead>
@@ -400,6 +424,11 @@ $tab      = $_GET['tab'] ?? 'dashboard';
             <h4 class="fw-bold text-dark mb-3">
                 <i class="bi bi-box-seam-fill text-primary me-2"></i>All Products (<?php echo count($products); ?>)
             </h4>
+
+            <a href="reports.php?type=products" class="btn btn-danger btn-sm mb-3">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Export Products to PDF
+            </a>
+
             <div class="table-responsive">
                 <table class="admin-table">
                     <thead>
