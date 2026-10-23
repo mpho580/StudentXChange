@@ -187,4 +187,23 @@ function updateListing(
     return $stmt->execute();
 }
 
+
+/**
+ * Get all categories for dropdowns
+ */
+function getAllCategories(): array
+{
+    global $conn;
+
+    $result = $conn->query("SELECT id, name FROM categories ORDER BY name ASC");
+
+    $categories = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $categories[] = $row;
+        }
+    }
+
+    return $categories;
+}
 ?>
