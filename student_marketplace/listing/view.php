@@ -71,13 +71,6 @@ if (!$item) {
                         <?php if ($isSold): ?>
                             <span class="badge bg-danger p-2 rounded-pill small">This item has been sold</span>
                         <?php elseif (isLoggedIn() && $_SESSION['user_id'] != $item['user_id']): ?>
-                            <form action="/student_marketplace/listing/interest.php" method="post" class="d-inline">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-                                <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
-                                <button type="submit" class="btn btn-success btn-sm px-3 fw-bold rounded-pill shadow-sm">
-                                    <i class="bi bi-hand-thumbs-up-fill me-1"></i>I'm Interested
-                                </button>
-                            </form>
                             <a href="/student_marketplace/message/thread.php?partner_id=<?php echo $item['user_id']; ?>&product_id=<?php echo $item['id']; ?>" class="btn btn-primary btn-sm px-3 fw-bold rounded-pill shadow-sm">
                                 <i class="bi bi-chat-dots-fill me-1"></i> Message Seller
                             </a>
