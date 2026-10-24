@@ -44,4 +44,6 @@ function setFlashMessage($message, $type = 'info') {
     $_SESSION['flash_message'] = $message;
     $_SESSION['flash_type'] = $type;
 }
+
+
 ?>

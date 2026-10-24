@@ -7,6 +7,40 @@ include __DIR__ . '/header.php';
 
 // Fetch recent active student listings from the database
 $listings = getListings();
+
+// Categories come from the database so the ids always match the saved listings
+$categories = getAllCategories();
+
+// Hide categories we don't want to show
+$hiddenCategories = ['sport', 'accom'];
+$categories = array_values(array_filter($categories, function ($cat) use ($hiddenCategories) {
+    foreach ($hiddenCategories as $word) {
+        if (stripos($cat['name'], $word) !== false) {
+            return false;
+        }
+    }
+    return true;
+}));
+
+// Pick an icon from the category name (falls back to a generic one)
+function categoryIcon(string $name): string
+{
+    $map = [
+        'book'       => 'bi-book-half',
+        'electronic' => 'bi-laptop',
+        'apparel'    => 'bi-tag',
+        'cloth'      => 'bi-tag',
+        'furniture'  => 'bi-house-door',
+        'stationery' => 'bi-pencil-fill',
+        'service'    => 'bi-briefcase-fill',
+    ];
+    foreach ($map as $keyword => $icon) {
+        if (stripos($name, $keyword) !== false) {
+            return $icon;
+        }
+    }
+    return 'bi-grid-fill';
+}
 ?>
 
 <!-- Home Hero Jumbotron -->
@@ -25,23 +59,13 @@ $listings = getListings();
 <!-- Browse Categories Section -->
 <h4 class="mb-3 text-dark fw-bold"><i class="bi bi-grid-fill text-primary me-2"></i>Select Campus Category</h4>
 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 mb-5">
-    <?php
-    $categories = [
-        ['id' => 1, 'name' => 'Textbooks', 'icon' => 'bi-book-half'],
-        ['id' => 2, 'name' => 'Electronics', 'icon' => 'bi-laptop'],
-        ['id' => 3, 'name' => 'Apparel', 'icon' => 'bi-tag'],
-        ['id' => 4, 'name' => 'Furniture', 'icon' => 'bi-house-door'],
-        ['id' => 5, 'name' => 'Stationery', 'icon' => 'bi-pencil-fill'],
-        ['id' => 6, 'name' => 'Services', 'icon' => 'bi-briefcase-fill']
-    ];
-    foreach ($categories as $cat):
-    ?>
+    <?php foreach ($categories as $cat): ?>
     <div class="col">
-        <a href="/student_marketplace/public/search.php?category_id=<?php echo $cat['id']; ?>" class="text-decoration-none">
+        <a href="/student_marketplace/public/search.php?category_id=<?php echo (int)$cat['id']; ?>" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm text-center py-3 bg-white hover-up text-primary transition">
                 <div class="card-body py-2">
-                    <div class="fs-2 mb-2"><i class="bi <?php echo $cat['icon']; ?>"></i></div>
-                    <span class="fw-semibold text-dark text-truncate d-block small"><?php echo $cat['name']; ?></span>
+                    <div class="fs-2 mb-2"><i class="bi <?php echo categoryIcon($cat['name']); ?>"></i></div>
+                    <span class="fw-semibold text-dark text-truncate d-block small"><?php echo htmlspecialchars($cat['name']); ?></span>
                 </div>
             </div>
         </a>

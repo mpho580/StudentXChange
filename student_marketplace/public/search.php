@@ -12,6 +12,20 @@ $min_price = isset($_GET['min_price']) && is_numeric($_GET['min_price']) ? float
 $max_price = isset($_GET['max_price']) && is_numeric($_GET['max_price']) ? floatval($_GET['max_price']) : null;
 $condition = isset($_GET['condition']) ? sanitizeInput($_GET['condition']) : null;
 
+// Categories come from the database so the filter always matches the saved listings
+$categories = getAllCategories();
+
+// Hide categories we don't want to show
+$hiddenCategories = ['sport', 'accom'];
+$categories = array_values(array_filter($categories, function ($cat) use ($hiddenCategories) {
+    foreach ($hiddenCategories as $word) {
+        if (stripos($cat['name'], $word) !== false) {
+            return false;
+        }
+    }
+    return true;
+}));
+
 // Perform database query with filters
 $results = getListings($query, $category_id, $min_price, $max_price, $condition);
 ?>
@@ -28,12 +42,12 @@ $results = getListings($query, $category_id, $min_price, $max_price, $condition)
                     <label class="form-label small fw-bold text-dark">Category</label>
                     <select class="form-select text-dark" name="category_id">
                         <option value="">All Categories</option>
-                        <option value="1" <?php if ($category_id == 1) echo 'selected'; ?>>Textbooks</option>
-                        <option value="2" <?php if ($category_id == 2) echo 'selected'; ?>>Electronics & Gadgets</option>
-                        <option value="3" <?php if ($category_id == 3) echo 'selected'; ?>>Apparel & Clothing</option>
-                        <option value="4" <?php if ($category_id == 4) echo 'selected'; ?>>Dorm Furniture</option>
-                        <option value="5" <?php if ($category_id == 5) echo 'selected'; ?>>Stationery</option>
-                        <option value="6" <?php if ($category_id == 6) echo 'selected'; ?>>Services</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= (int)$cat['id'] ?>"
+                                <?= $category_id === (int)$cat['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 
@@ -57,11 +71,12 @@ $results = getListings($query, $category_id, $min_price, $max_price, $condition)
                         <option value="Like New" <?php if ($condition == 'Like New') echo 'selected'; ?>>Like New</option>
                         <option value="Good" <?php if ($condition == 'Good') echo 'selected'; ?>>Good</option>
                         <option value="Fair" <?php if ($condition == 'Fair') echo 'selected'; ?>>Fair</option>
+                        <option value="Poor" <?php if ($condition == 'Poor') echo 'selected'; ?>>Poor</option>
                     </select>
                 </div>
                 
-                <button type="submit" class="btn btn-primary w-full mt-2"><i class="bi bi-check2-circle"></i> Apply Filters</button>
-                <a href="search.php" class="btn btn-outline-secondary w-full mt-2 btn-sm">Clear Filters</a>
+                <button type="submit" class="btn btn-primary w-100 mt-2"><i class="bi bi-check2-circle"></i> Apply Filters</button>
+                <a href="search.php" class="btn btn-outline-secondary w-100 mt-2 btn-sm">Clear Filters</a>
             </form>
         </div>
     </div>
